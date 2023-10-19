@@ -31,7 +31,7 @@ class Tile:
         tile = cls()
         lines = tile_string.strip().split("\n")
         attributes = {
-                line.split(" ")[0]: lines.split(" ")[1] for line in lines
+                line.split(" ")[0]: " ".join(line.split(" ")[1:]) for line in lines
         }
         tile.name = attributes.get("TILENAME", "")
         tile.label = attributes.get("LABEL", "")
@@ -135,7 +135,7 @@ class TileSet:
         ]
         tile_set = cls()
         tile_set.tiles = tiles
-        glues = [itertools.chain.from_iterable(tile.glue_labels) for tile in tiles]
+        glues = itertools.chain.from_iterable(tile.glue_labels for tile in tiles)
         unique_glue_ids = [
             int(l[1:]) for l in glues if l.startswith("_") and l[1:].isnumeric()
         ]
@@ -146,7 +146,7 @@ class TileSet:
         return "\n\n".join(tile.to_string() for tile in self.tiles)
 
     @classmethod
-    def from_file(cls, file):
+    def from_file(cls, file_path):
         with open(file_path, "r") as file:
             content = file.read()
         return cls().from_string(content)
